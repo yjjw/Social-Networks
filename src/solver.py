@@ -17,7 +17,7 @@ def build_graph(file_path):
     for i in range(m):
         node1 = int(lines[i][0][1:])
         node2 = int(lines[i][1])
-        weight = int(lines[i][2])
+        weight = 1.0 / int(lines[i][2])
         graph.add_node(node1)
         graph.add_node(node2)
         graph.add_edge(node1, node2, weight=weight)

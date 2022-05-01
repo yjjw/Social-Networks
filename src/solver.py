@@ -2,8 +2,8 @@ import networkx as nx
 import numpy as np
 import scipy as sp
 import time
-n = 300
-
+n = 10
+m = 20000
 
 # build an undirected weighted graph from input file
 # return the largest connected component in graph
@@ -14,26 +14,22 @@ def build_graph(file_path):
     lines = file.readlines()
     lines = [line.split() for line in lines]
     print('Start building graphs from the file')
-    for line in lines:
-        node1 = int(line[0][1:])
-        node2 = int(line[1])
-        weight = int(line[2])
+    for i in range(m):
+        node1 = int(lines[i][0][1:])
+        node2 = int(lines[i][1])
+        weight = int(lines[i][2])
         graph.add_node(node1)
         graph.add_node(node2)
         graph.add_edge(node1, node2, weight=weight)
 
     print('Finish building graphs from the file')
+    largest_subgraph = find_largest_connected_graph(graph)
+    return largest_subgraph
+
+
+def find_largest_connected_graph(graph):
     largest_component = max(nx.connected_components(graph), key=len)
-    print('Start building largest component subgraph')
-    # for node1 in largest_component:
-    #     largest_subgraph.add_node(node1)
-    #     for node2 in graph[node1].keys():
-    #         largest_subgraph.add_node(node2)
-    #         weight = graph[node1][node2]['weight']
-    #         largest_subgraph.add_edge(node1, node2, weight=weight)
     largest_subgraph = graph.subgraph(largest_component)
-    print('Finish building the largest component subgraph')
-    print(f"The time taken to build the largest connected graph from the file was {time.time()-t1}")
     return largest_subgraph
 
 
@@ -50,12 +46,15 @@ def find_top_n_nodes(graph):
     return top_n_weighted_nodes
 
 
-# return new graph after removing n top weighted nodes with edges
+# return new connected graph after removing n top weighted nodes with edges
 def remove_connection(graph, connections_to_be_removed):
+    new_graph = graph.copy()
     for node in connections_to_be_removed:
-        if node in graph:
-            del node
-    return graph
+        if node in new_graph:
+            new_graph.remove_node(node)
+
+    largest_connected_subgraph = find_largest_connected_graph(new_graph)
+    return largest_connected_subgraph
 
 
 def calculate_stats(graph):
@@ -68,10 +67,12 @@ def calculate_stats(graph):
 def main():
     file_path = "../dataset/AMiner-Coauthor.txt"
     graph = build_graph(file_path)
+    connections_to_be_removed = find_top_n_nodes(graph)
+    new_graph = remove_connection(graph, connections_to_be_removed)
     print("Stats in original graph:")
     calculate_stats(graph)
-    # connections_to_be_removed = find_top_n_nodes(graph)
-    # new_graph = remove_connection(graph, connections_to_be_removed)
+    print("Stats in graph after removing important connections:")
+    calculate_stats(new_graph)
 
 
 if __name__ == '__main__':

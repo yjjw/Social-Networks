@@ -3,12 +3,11 @@ import numpy as np
 import scipy as sp
 import time
 n = 10
-m = 20000
+m = 130000
 
 # build an undirected weighted graph from input file
 # return the largest connected component in graph
 def build_graph(file_path):
-    t1 = time.time()
     graph = nx.Graph()
     file = open(file_path)
     lines = file.readlines()
@@ -24,6 +23,8 @@ def build_graph(file_path):
 
     print('Finish building graphs from the file')
     largest_subgraph = find_largest_connected_graph(graph)
+    print(f'There are {largest_subgraph.number_of_nodes()} nodes in the original connected graph')
+    print(f'There are {largest_subgraph.number_of_edges()} edges in the original connected graph')
     return largest_subgraph
 
 
@@ -58,10 +59,8 @@ def remove_connection(graph, connections_to_be_removed):
 
 
 def calculate_stats(graph):
-    t2 = time.time()
     degree_separation = nx.average_shortest_path_length(graph, weight='weight')
     print(f'the degree of separation on average between any two authors is {degree_separation}')
-    print(f"The time taken to calculate the statistics from the graph was {time.time()-t2}")
 
 
 def main():
@@ -69,6 +68,8 @@ def main():
     graph = build_graph(file_path)
     connections_to_be_removed = find_top_n_nodes(graph)
     new_graph = remove_connection(graph, connections_to_be_removed)
+    print(f'There are {new_graph.number_of_nodes()} nodes in the new connected graph')
+    print(f'There are {new_graph.number_of_edges()} edges in the new connected graph')
     print("Stats in original graph:")
     calculate_stats(graph)
     print("Stats in graph after removing important connections:")

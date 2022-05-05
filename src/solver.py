@@ -3,7 +3,7 @@ import numpy as np
 import scipy as sp
 import time
 n = 10
-m = 130000
+m = 1064736
 
 # build an undirected weighted graph from input file
 # return the largest connected component in graph
